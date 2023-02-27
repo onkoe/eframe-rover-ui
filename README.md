@@ -36,3 +36,36 @@ Using Rust for a front-end sounds horrifying, but it's actually pretty nice. In 
   - [ ] Change Port
   - [ ] Change IP
   - [ ] Scan for devices (return list)
+
+### Development
+
+This project uses `trunk` to compile to WebAssembly. To run it on your machine's browser, just run `trunk serve --release`, then navigate to `http://127.0.0.1:8080/index.html#dev` or wherever trunk says `📡 server listening at http://place:port/index.html#dev` :)
+
+***
+`#dev` is important here, as it allows you to **skip sw.js caching on dev builds**.
+***
+
+If you want to run it on your own machine, you can compile it like normal. Just run `cargo build` and you'll be able to to run it like a native app (bc it is...)
+
+#### Problems
+
+You may have some minor problems if you don't have all the requirements.
+
+If you get errors related to your Rust version, just run `rustup update`. That fixes most problems...
+
+Compiling on Linux sometimes requires these packages. You'll probably want them anyways, so give these commands a try for your distro:
+
+Ubuntu/Debian: `sudo apt install libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev libxkbcommon-dev libssl-dev` (not all-inclusive, but that's probably most of it)
+
+Fedora/CentOS/RHEL: `sudo dnf install clang clang-devel clang-tools-extra libxkbcommon-devel pkg-config openssl-devel libxcb-devel fontconfig fontconfig-devel binaryen gcc alsa-lib-devel cmake make gcc-c++ freetype-devel expat-devel libX11-devel` (all inclusive if you're on GNOME/Xfce)
+
+Windows users should probably grab Visual Studio, as it typically provides development things. Or just use WSL :)
+
+### Launch on Horrifying Setups
+
+If you're weird like me, you may be using a MacBook running Asahi Linux. Since Asahi doesn't have complete WebGL, browsers don't use it by default. So... the screen will be blank when you launch an eframe application. This can also happen on MUCH older machines.
+
+Run this command to launch Firefox with WebGL, no matter how apalling your setup is:
+`MESA_GL_VERSION_OVERRIDE=3.3 MESA_GLSL_VERSION_OVERRIDE=330 MESA_GLES_VERSION_OVERRIDE=3.1 MOZ_ENABLE_WAYLAND=1 firefox`
+
+You can then develop like normal using `trunk serve --release`. You'll actually see something, and it'll look pretty good, too :)
