@@ -1,3 +1,5 @@
+use egui::{ widgets::Button, Color32, Frame, Sense, TextStyle, Ui };
+
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
 #[derive(serde::Deserialize, serde::Serialize)]
 #[serde(default)] // if we add new fields, give them default values when deserializing old state
@@ -95,8 +97,16 @@ impl eframe::App for TemplateApp {
         egui::CentralPanel::default().show(ctx, |ui| {
             // The central panel the region left after adding TopPanel's and SidePanel's
 
+            let mut test_int = 1;
+
             ui.heading("eframe template");
             ui.hyperlink("https://github.com/emilk/eframe_template");
+            if ui.button(format!("test"))
+                .clicked() {
+                    test_int += 1;
+                    *label = format!("this is a fake label {}", test_int).to_string();
+                };
+
             ui.add(egui::github_link_file!(
                 "https://github.com/emilk/eframe_template/blob/master/",
                 "Source code."

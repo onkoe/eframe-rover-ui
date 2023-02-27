@@ -1,75 +1,38 @@
-# eframe template
+# egui-rover-gui
 
-[![dependency status](https://deps.rs/repo/github/emilk/eframe_template/status.svg)](https://deps.rs/repo/github/emilk/eframe_template)
-[![Build Status](https://github.com/emilk/eframe_template/workflows/CI/badge.svg)](https://github.com/emilk/eframe_template/actions?workflow=CI)
+A reimplementation of [RoverGUI](https://github.com/ROMANT21/RoverGUI) in Rust's eframe/egui toolkit.
 
-This is a template repo for [eframe](https://github.com/emilk/egui/tree/master/crates/eframe), a framework for writing apps using [egui](https://github.com/emilk/egui/).
+![The perfect image](https://github.com/ROMANT21/RoverGUI/raw/master/coolguy.png)
 
-The goal is for this to be the simplest way to get started writing a GUI app in Rust.
+## The Plan
 
-You can compile your app natively or for the web, and share it using Github Pages.
+Using Rust for a front-end sounds horrifying, but it's actually pretty nice. In general, there are a few considerations to take when creating a GUI in Rust:
 
-## Getting started
+1. **Maintainablility**: Use libraries, APIs, and methodologies that will be easy to comprehend and utilize for a long time!
+2. **Usability**: Anyone, anywhere, should be able to pick up and use the GUI without prior knowledge.
+    - Implement help documentation and give more information in settings
+    - Allow users to adjust settings as necessary, on the fly
+    - Should work on all platforms (without being a pain)
+3. **Documentation**: For future developers, the GUI and its components should be documented.
+    - Rust does this automatically through [rustdoc](https://doc.rust-lang.org/rustdoc/what-is-rustdoc.html).
+    - It could eventually be a good idea to implement tutorial documentation through an [mdBook](https://rust-lang.github.io/mdBook/). One of these would help future users (long after we're gone) to comprehend the software and its uses.
 
-Start by clicking "Use this template" at https://github.com/emilk/eframe_template/ or follow [these instructions](https://docs.github.com/en/free-pro-team@latest/github/creating-cloning-and-archiving-repositories/creating-a-repository-from-a-template).
+### Resources
 
-Change the name of the crate: Chose a good name for your project, and change the name to it in:
-* `Cargo.toml`
-    * Change the `package.name` from `eframe_template` to `your_crate`.
-    * Change the `package.authors`
-* `main.rs`
-    * Change `eframe_template::TemplateApp` to `your_crate::TemplateApp`
-* `index.html`
-    * Change the `<title>eframe template</title>` to `<title>your_crate</title>`. optional.
-* `assets/sw.js`
-  * Change the `'./eframe_template.js'` to `./your_crate.js` (in `filesToCache` array)
-  * Change the `'./eframe_template_bg.wasm'` to `./your_crate_bg.wasm` (in `filesToCache` array)
+1. [egui](https://github.com/emilk/egui): a GUI library which works on most platforms, including internet browsers through WebAssembly.
+2. [eframe](https://github.com/emilk/egui/tree/master/crates/eframe): the egui framework that works to turn the basics of egui into a full ui ecosystem. 
+3. [eframe YouTube Tutorial](https://www.youtube.com/watch?v=NtUkr_z7l84): it's YouTube so yeah
+4. [Rust WebAssembly Book](https://rustwasm.github.io/docs/book/): the documentation for WebAssembly, which converts Rust code to run in the browser sandbox. It also enables use of egui in the browser!
 
-### Learning about egui
+### To Do
 
-`src/app.rs` contains a simple example app. This is just to give some inspiration - most of it can be removed if you like.
-
-The official egui docs are at <https://docs.rs/egui>. If you prefer watching a video introduction, check out <https://www.youtube.com/watch?v=NtUkr_z7l84>. For inspiration, check out the [the egui web demo](https://emilk.github.io/egui/index.html) and follow the links in it to its source code.
-
-### Testing locally
-
-Make sure you are using the latest version of stable rust by running `rustup update`.
-
-`cargo run --release`
-
-On Linux you need to first run:
-
-`sudo apt-get install libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev libxkbcommon-dev libssl-dev`
-
-On Fedora Rawhide you need to run:
-
-`dnf install clang clang-devel clang-tools-extra libxkbcommon-devel pkg-config openssl-devel libxcb-devel fontconfig-devel`
-
-### Web Locally
-
-You can compile your app to [WASM](https://en.wikipedia.org/wiki/WebAssembly) and publish it as a web page.
-
-We use [Trunk](https://trunkrs.dev/) to build for web target.
-1. Install Trunk with `cargo install --locked trunk`.
-2. Run `trunk serve` to build and serve on `http://127.0.0.1:8080`. Trunk will rebuild automatically if you edit the project.
-3. Open `http://127.0.0.1:8080/index.html#dev` in a browser. See the warning below.
-
-> `assets/sw.js` script will try to cache our app, and loads the cached version when it cannot connect to server allowing your app to work offline (like PWA).
-> appending `#dev` to `index.html` will skip this caching, allowing us to load the latest builds during development.
-
-### Web Deploy
-1. Just run `trunk build --release`.
-2. It will generate a `dist` directory as a "static html" website
-3. Upload the `dist` directory to any of the numerous free hosting websites including [GitHub Pages](https://docs.github.com/en/free-pro-team@latest/github/working-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site).
-4. we already provide a workflow that auto-deploys our app to GitHub pages if you enable it.
-> To enable Github Pages, you need to go to Repository -> Settings -> Pages -> Source -> set to `gh-pages` branch and `/` (root).
->
-> If `gh-pages` is not available in `Source`, just create and push a branch called `gh-pages` and it should be available.
-
-You can test the template app at <https://emilk.github.io/eframe_template/>.
-
-## Updating egui
-
-As of 2022, egui is in active development with frequent releases with breaking changes. [eframe_template](https://github.com/emilk/eframe_template/) will be updated in lock-step to always use the latest version of egui.
-
-When updating `egui` and `eframe` it is recommended you do so one version at the time, and read about the changes in [the egui changelog](https://github.com/emilk/egui/blob/master/CHANGELOG.md) and [eframe changelog](https://github.com/emilk/egui/blob/master/crates/eframe/CHANGELOG.md).
+- [ ] Finish basic UI
+  - [ ] SoRo Logo
+  - [ ] Pink background
+- [ ] "Video" stream receiver
+- [ ] Buttons
+  - [ ] Start stream
+  - [ ] Stop stream
+  - [ ] Change Port
+  - [ ] Change IP
+  - [ ] Scan for devices (return list)
