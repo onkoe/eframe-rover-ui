@@ -23,6 +23,12 @@ Using Rust for a front-end sounds horrifying, but it's actually pretty nice. In 
 2. [eframe](https://github.com/emilk/egui/tree/master/crates/eframe): the egui framework that works to turn the basics of egui into a full ui ecosystem. 
 3. [eframe YouTube Tutorial](https://www.youtube.com/watch?v=NtUkr_z7l84): it's YouTube so yeah
 4. [Rust WebAssembly Book](https://rustwasm.github.io/docs/book/): the documentation for WebAssembly, which converts Rust code to run in the browser sandbox. It also enables use of egui in the browser!
+5. [libzmq-rs Guidebook](https://jean-airoldie.github.io/libzmq-rs/basics/patterns.html)
+6. [libzmq-rs docs.rs site](https://docs.rs/libzmq/0.2.5/libzmq/index.html)
+7. [image (rust) crates.io page](https://crates.io/crates/image)
+8. [libzmq-rs-Based Projects](https://github.com/jean-airoldie/libzmq-rs/network/dependents)
+9. [RustWASM Gamepad Docs](https://rustwasm.github.io/wasm-bindgen/api/web_sys/struct.Gamepad.html)
+10. [eframe-template](https://github.com/emilk/eframe_template)
 
 ### To Do
 
