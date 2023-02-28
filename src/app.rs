@@ -1,4 +1,5 @@
-use egui::{ widgets::Button, Color32, Frame, Sense, TextStyle, Ui };
+use egui::{ widgets::Button}; //, Color32, Frame, Sense, TextStyle, Ui };
+mod zmq_connector;
 
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
 #[derive(serde::Deserialize, serde::Serialize)]
@@ -55,12 +56,16 @@ impl eframe::App for TemplateApp {
         // For inspiration and more examples, go to https://emilk.github.io/egui
 
         #[cfg(not(target_arch = "wasm32"))] // no File->Quit on web pages!
+        // YES FILE AND QUIT ON WEB PAGES YEEEEAH
         egui::TopBottomPanel::top("top_panel").show(ctx, |ui| {
             // The top panel is often a good place for a menu bar:
             egui::menu::bar(ui, |ui| {
                 ui.menu_button("File", |ui| {
-                    if ui.button("Quit").clicked() {
-                        _frame.close();
+                    let button_label = "ayooooo";
+
+                    let my_button = ui.add(Button::new(button_label));
+                    if my_button.clicked() {
+                        
                     }
                 });
             });
