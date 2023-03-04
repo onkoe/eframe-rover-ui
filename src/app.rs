@@ -1,5 +1,7 @@
 use egui::{ widgets::Button}; //, Color32, Frame, Sense, TextStyle, Ui };
-mod zmq_connector;
+use eframe::{egui};
+use egui_extras::{RetainedImage, image};
+use crate::video::video::take_zmq_data;
 
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
 #[derive(serde::Deserialize, serde::Serialize)]
@@ -11,6 +13,8 @@ pub struct TemplateApp {
     // this how you opt-out of serialization of a member
     #[serde(skip)]
     value: f32,
+    #[serde(skip)]
+    muh_photo:RetainedImage,
 }
 
 impl Default for TemplateApp {
@@ -19,6 +23,12 @@ impl Default for TemplateApp {
             // Example stuff:
             label: "Hello World!".to_owned(),
             value: 2.7,
+
+            muh_photo: RetainedImage::from_image_bytes(
+                "no_image_yet.jpeg",
+                include_bytes!("no_image_yet.jpeg"),
+            )
+            .unwrap(),
         }
     }
 }
@@ -48,7 +58,7 @@ impl eframe::App for TemplateApp {
     /// Called each time the UI needs repainting, which may be many times per second.
     /// Put your widgets into a `SidePanel`, `TopPanel`, `CentralPanel`, `Window` or `Area`.
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        let Self { label, value } = self;
+        let Self { label, value, muh_photo } = self;
 
         // Examples of how to create different panels and windows.
         // Pick whichever suits you.
@@ -111,6 +121,27 @@ impl eframe::App for TemplateApp {
                     test_int += 1;
                     *label = format!("this is a fake label {}", test_int).to_string();
                 };
+
+            // IMAGE STUFF
+            // IMAGE STUFF
+            // IMAGE STUFF
+            // yeeeeeeeeeeeeeeeeeeeeeeeeah
+            // IMAGE STUFF
+            // IMAGE STUFF
+            ui.heading("This is an image:");
+            self.muh_photo.show(ui);
+
+            ui.heading("This is an image you can click:");
+            if ui.add(egui::ImageButton::new(
+                self.muh_photo.texture_id(ctx),
+                self.muh_photo.size_vec2(),
+            )).clicked() {
+                self.muh_photo = RetainedImage::from_image_bytes(
+                    "zmq image",
+                    take_zmq_data().unwrap().as_bytes(),
+                )
+                .unwrap();
+            }
 
             ui.add(egui::github_link_file!(
                 "https://github.com/emilk/eframe_template/blob/master/",
