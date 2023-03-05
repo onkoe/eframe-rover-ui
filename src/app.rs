@@ -1,7 +1,10 @@
-use egui::{ widgets::Button}; //, Color32, Frame, Sense, TextStyle, Ui };
-use eframe::{egui};
-use egui_extras::{RetainedImage, image};
 use crate::video::video::take_zmq_data;
+use crate::zmq_connector::zmq_connector::start_zmq;
+use eframe::egui;
+use egui::widgets::Button; //, Color32, Frame, Sense, TextStyle, Ui };
+use egui_extras::{image, RetainedImage};
+use tokio::runtime::{Builder, Runtime};
+use tokio::task::spawn_blocking;
 
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
 #[derive(serde::Deserialize, serde::Serialize)]
@@ -14,7 +17,10 @@ pub struct TemplateApp {
     #[serde(skip)]
     value: f32,
     #[serde(skip)]
-    muh_photo:RetainedImage,
+    muh_photo: RetainedImage,
+
+    #[serde(skip)]
+    runtime: Runtime,
 }
 
 impl Default for TemplateApp {
@@ -29,6 +35,8 @@ impl Default for TemplateApp {
                 include_bytes!("no_image_yet.jpeg"),
             )
             .unwrap(),
+
+            runtime: Builder::new_current_thread().enable_all().build().unwrap(),
         }
     }
 }
@@ -58,7 +66,12 @@ impl eframe::App for TemplateApp {
     /// Called each time the UI needs repainting, which may be many times per second.
     /// Put your widgets into a `SidePanel`, `TopPanel`, `CentralPanel`, `Window` or `Area`.
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        let Self { label, value, muh_photo } = self;
+        let Self {
+            label,
+            value,
+            muh_photo,
+            runtime,
+        } = self;
 
         // Examples of how to create different panels and windows.
         // Pick whichever suits you.
@@ -74,9 +87,7 @@ impl eframe::App for TemplateApp {
                     let button_label = "ayooooo";
 
                     let my_button = ui.add(Button::new(button_label));
-                    if my_button.clicked() {
-                        
-                    }
+                    if my_button.clicked() {}
                 });
             });
         });
@@ -116,11 +127,10 @@ impl eframe::App for TemplateApp {
 
             ui.heading("eframe template");
             ui.hyperlink("https://github.com/emilk/eframe_template");
-            if ui.button(format!("test"))
-                .clicked() {
-                    test_int += 1;
-                    *label = format!("this is a fake label {}", test_int).to_string();
-                };
+            if ui.button(format!("test")).clicked() {
+                test_int += 1;
+                *label = format!("this is a fake label {}", test_int).to_string();
+            };
 
             // IMAGE STUFF
             // IMAGE STUFF
@@ -131,11 +141,30 @@ impl eframe::App for TemplateApp {
             ui.heading("This is an image:");
             self.muh_photo.show(ui);
 
+            // TODO: call zmq_connector. get ZmqClient
+            //let runtime = Builder::new_current_thread().enable_all().build().unwrap();
+
+            let zmq_bruh = runtime
+                .block_on(spawn_blocking(|| start_zmq("127.0.0.1".to_string(), 1234)))
+                .unwrap();
+            let value = match zmq_bruh {
+                Ok(Ok(zmq_guy)) => runtime.block_on(future_result),
+                Err(e) => panic!("Error: {:?}", e),
+            };
+
             ui.heading("This is an image you can click:");
-            if ui.add(egui::ImageButton::new(
-                self.muh_photo.texture_id(ctx),
-                self.muh_photo.size_vec2(),
-            )).clicked() {
+            if ui
+                .add(egui::ImageButton::new(
+                    self.muh_photo.texture_id(ctx),
+                    self.muh_photo.size_vec2(),
+                ))
+                .clicked()
+            {
+                // TODO...
+
+                // call video each time clicked. get new frame
+                // ... make sure to add ZmqClient as parameter
+
                 self.muh_photo = RetainedImage::from_image_bytes(
                     "zmq image",
                     take_zmq_data().unwrap().as_bytes(),
