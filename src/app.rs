@@ -6,9 +6,8 @@ use egui_extras::{image, RetainedImage};
 use tokio::runtime::{Builder, Runtime};
 use tokio::task::spawn_blocking;
 
-/// We derive Deserialize/Serialize so we can persist app state on shutdown.
 #[derive(serde::Deserialize, serde::Serialize)]
-#[serde(default)] // if we add new fields, give them default values when deserializing old state
+#[serde(default)]
 pub struct TemplateApp {
     // Example stuff:
     label: String,
@@ -30,13 +29,16 @@ impl Default for TemplateApp {
             label: "Hello World!".to_owned(),
             value: 2.7,
 
+            // default image
             muh_photo: RetainedImage::from_image_bytes(
                 "no_image_yet.jpeg",
                 include_bytes!("no_image_yet.jpeg"),
             )
             .unwrap(),
 
+            // async runtime
             runtime: Builder::new_current_thread().enable_all().build().unwrap(),
+            // TODO: PUT ZmqClient up here SO IT DOESNT GET RECREATED EACH FRAME
         }
     }
 }
@@ -73,20 +75,13 @@ impl eframe::App for TemplateApp {
             runtime,
         } = self;
 
-        // Examples of how to create different panels and windows.
-        // Pick whichever suits you.
-        // Tip: a good default choice is to just keep the `CentralPanel`.
-        // For inspiration and more examples, go to https://emilk.github.io/egui
-
         #[cfg(not(target_arch = "wasm32"))] // no File->Quit on web pages!
         // YES FILE AND QUIT ON WEB PAGES YEEEEAH
         egui::TopBottomPanel::top("top_panel").show(ctx, |ui| {
             // The top panel is often a good place for a menu bar:
             egui::menu::bar(ui, |ui| {
                 ui.menu_button("File", |ui| {
-                    let button_label = "ayooooo";
-
-                    let my_button = ui.add(Button::new(button_label));
+                    let my_button = ui.add(Button::new("hey"));
                     if my_button.clicked() {}
                 });
             });
@@ -95,48 +90,17 @@ impl eframe::App for TemplateApp {
         egui::SidePanel::left("side_panel").show(ctx, |ui| {
             ui.heading("Side Panel");
 
-            ui.horizontal(|ui| {
-                ui.label("Write something: ");
-                ui.text_edit_singleline(label);
-            });
-
-            ui.add(egui::Slider::new(value, 0.0..=10.0).text("value"));
-            if ui.button("Increment").clicked() {
-                *value += 1.0;
-            }
-
             ui.with_layout(egui::Layout::bottom_up(egui::Align::LEFT), |ui| {
                 ui.horizontal(|ui| {
                     ui.spacing_mut().item_spacing.x = 0.0;
-                    ui.label("powered by ");
-                    ui.hyperlink_to("egui", "https://github.com/emilk/egui");
-                    ui.label(" and ");
-                    ui.hyperlink_to(
-                        "eframe",
-                        "https://github.com/emilk/egui/tree/master/crates/eframe",
-                    );
-                    ui.label(".");
+                    ui.label("ayo");
                 });
             });
         });
 
         egui::CentralPanel::default().show(ctx, |ui| {
-            // The central panel the region left after adding TopPanel's and SidePanel's
+            ui.heading("eframe_rover_gui :)");
 
-            let mut test_int = 1;
-
-            ui.heading("eframe template");
-            ui.hyperlink("https://github.com/emilk/eframe_template");
-            if ui.button(format!("test")).clicked() {
-                test_int += 1;
-                *label = format!("this is a fake label {}", test_int).to_string();
-            };
-
-            // IMAGE STUFF
-            // IMAGE STUFF
-            // IMAGE STUFF
-            // yeeeeeeeeeeeeeeeeeeeeeeeeah
-            // IMAGE STUFF
             // IMAGE STUFF
             ui.heading("This is an image:");
             self.muh_photo.show(ui);
@@ -178,14 +142,5 @@ impl eframe::App for TemplateApp {
             ));
             egui::warn_if_debug_build(ui);
         });
-
-        if false {
-            egui::Window::new("Window").show(ctx, |ui| {
-                ui.label("Windows can be moved by dragging them.");
-                ui.label("They are automatically sized based on contents.");
-                ui.label("You can turn on resizing and scrolling if you like.");
-                ui.label("You would normally choose either panels OR windows.");
-            });
-        }
     }
 }
