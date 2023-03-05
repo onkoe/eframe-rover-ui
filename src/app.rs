@@ -1,14 +1,15 @@
 use crate::video::video::take_zmq_data;
-use crate::zmq_connector::zmq_connector::start_zmq;
+use crate::zmq_connector::zmq_connector::{ start_zmq, ZmqClient };
 use eframe::egui;
 use egui::widgets::Button; //, Color32, Frame, Sense, TextStyle, Ui };
 use egui_extras::{image, RetainedImage};
 use tokio::runtime::{Builder, Runtime};
 use tokio::task::spawn_blocking;
 
+
 #[derive(serde::Deserialize, serde::Serialize)]
 #[serde(default)]
-pub struct TemplateApp {
+pub struct RoverGUI {
     // Example stuff:
     label: String,
 
@@ -20,9 +21,12 @@ pub struct TemplateApp {
 
     #[serde(skip)]
     runtime: Runtime,
+
+    #[serde(skip)]
+    //client: &mut ZmqClient,
 }
 
-impl Default for TemplateApp {
+impl Default for RoverGUI {
     fn default() -> Self {
         Self {
             // Example stuff:
@@ -36,6 +40,8 @@ impl Default for TemplateApp {
             )
             .unwrap(),
 
+            //client: &mut ZmqClient { context: (None), socket: (None) },
+
             // async runtime
             runtime: Builder::new_current_thread().enable_all().build().unwrap(),
             // TODO: PUT ZmqClient up here SO IT DOESNT GET RECREATED EACH FRAME
@@ -43,7 +49,7 @@ impl Default for TemplateApp {
     }
 }
 
-impl TemplateApp {
+impl RoverGUI {
     /// Called once before the first frame.
     pub fn new(cc: &eframe::CreationContext<'_>) -> Self {
         // This is also where you can customize the look and feel of egui using
@@ -59,7 +65,7 @@ impl TemplateApp {
     }
 }
 
-impl eframe::App for TemplateApp {
+impl eframe::App for RoverGUI {
     /// Called by the frame work to save state before shutdown.
     fn save(&mut self, storage: &mut dyn eframe::Storage) {
         eframe::set_value(storage, eframe::APP_KEY, self);
@@ -73,6 +79,7 @@ impl eframe::App for TemplateApp {
             value,
             muh_photo,
             runtime,
+            client,
         } = self;
 
         #[cfg(not(target_arch = "wasm32"))] // no File->Quit on web pages!
