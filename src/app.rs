@@ -1,4 +1,4 @@
-use egui_extras::RetainedImage;
+use egui_extras::{image, RetainedImage};
 use std::sync::{Arc, Mutex};
 use zmq::{Context, Socket};
 
@@ -12,13 +12,36 @@ pub struct RoverGUI {
     // this how you opt-out of serialization of a member
     #[serde(skip)]
     value: f32,
+
+    #[serde(skip)]
+    zmq_socket: Arc<Mutex<Socket>>,
+
+    #[serde(skip)]
+    current_frame: Arc<Mutex<Option<RetainedImage>>>,
 }
 impl Default for RoverGUI {
     fn default() -> Self {
+        // Initialize zmq without connecting.
+        let context = Context::new();
+        let socket = context.socket(zmq::SUB).unwrap(); // why can this fail?
+        socket.set_subscribe(b"").unwrap();
+        socket.set_rcvtimeo(0).unwrap();
+
+        // Initialize placeholder image.
+        let placeholder_image = Arc::new(Mutex::new(Some(
+            RetainedImage::from_image_bytes(
+                "no_image_yet.png",
+                include_bytes!("../assets/no_image_yet.png"),
+            )
+            .unwrap(),
+        )));
+
         Self {
             // Example stuff:
             label: "Hello World!".to_owned(),
             value: 2.7,
+            current_frame: placeholder_image,
+            zmq_socket: Arc::new(Mutex::new(socket)),
         }
     }
 }
@@ -48,7 +71,12 @@ impl eframe::App for RoverGUI {
     /// Called each time the UI needs repainting, which may be many times per second.
     /// Put your widgets into a `SidePanel`, `TopPanel`, `CentralPanel`, `Window` or `Area`.
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        let Self { label, value } = self;
+        let Self {
+            label,
+            value,
+            zmq_socket,
+            current_frame,
+        } = self;
 
         // Examples of how to create different panels and windows.
         // Pick whichever suits you.
