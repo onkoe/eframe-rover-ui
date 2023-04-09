@@ -11,7 +11,7 @@ fn main() -> eframe::Result<()> {
     eframe::run_native(
         "eframe template",
         native_options,
-        Box::new(|cc| Box::new(eframe_template::RoverGUI::new(cc))),
+        Box::new(|cc| Box::new(eframe_rover_gui::RoverGUI::new(cc))),
     )
 }
 
