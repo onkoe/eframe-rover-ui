@@ -23,9 +23,15 @@ impl Default for RoverGUI {
     fn default() -> Self {
         // Initialize zmq without connecting.
         let context = Context::new();
-        let socket = context.socket(zmq::SUB).unwrap(); // why can this fail?
-        socket.set_subscribe(b"").unwrap();
-        socket.set_rcvtimeo(0).unwrap();
+        let socket = context
+            .socket(zmq::SUB)
+            .expect("Failed to create initial zmq socket."); // why can this fail?
+        socket
+            .set_subscribe(b"")
+            .expect("Failed to set inital socket type to subscriber.");
+        socket
+            .set_rcvtimeo(0)
+            .expect("Failed to disable blocking on initial zmq socket."); // disable waiting on a message
 
         // Initialize placeholder image.
         let placeholder_image = Arc::new(Mutex::new(Some(
@@ -33,7 +39,7 @@ impl Default for RoverGUI {
                 "no_image_yet.png",
                 include_bytes!("../assets/no_image_yet.png"),
             )
-            .unwrap(),
+            .expect("Placeholder image initialization failed."),
         )));
 
         Self {
