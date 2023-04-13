@@ -1,6 +1,7 @@
 use egui_extras::{image, RetainedImage};
 use std::sync::{Arc, Mutex};
 use std::thread::spawn;
+use web_sys::console;
 use zmq::{Context, Socket};
 
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
@@ -74,16 +75,29 @@ impl RoverGUI {
     }
 
     fn connect(&mut self) {
-        let socket = self.zmq_socket
+        let guarded_socket = self
+            .zmq_socket
             .as_ref()
-            .lock()
-            .unwrap()
-            .connect(format!("{}:{}", self.given_ip, self.given_port).as_str());
+            .lock();
 
-        match socket {
-            Ok(socket) => (),
+        let socket = match guarded_socket {
+            Ok(good_socket) => good_socket,
             Err(error) => {
-                
+                console::error_1(&"[connect]: Unable to access the ZMQ socket.".into());
+                return;
+            }
+        };
+            
+        let result = socket.connect(format!("{}:{}", self.given_ip, self.given_port).as_str());
+
+        match result {
+            Ok(_) => {
+                console::log_1(&"[connect]: ZMQ connection successful!".into());
+            }
+            Err(error) => {
+                console::error_1(&"[connect]: ZMQ connection error!".into());
+                console::error_1(&error.message().into());
+                console::error_1(&"--------".into());
             }
         }
     }
