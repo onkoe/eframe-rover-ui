@@ -1,5 +1,6 @@
 use egui_extras::{image, RetainedImage};
 use std::sync::{Arc, Mutex};
+use std::thread::spawn;
 use zmq::{Context, Socket};
 
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
@@ -12,6 +13,9 @@ pub struct RoverGUI {
     // this how you opt-out of serialization of a member
     #[serde(skip)]
     value: f32,
+
+    given_ip: String,
+    given_port: u16,
 
     #[serde(skip)]
     zmq_socket: Arc<Mutex<Socket>>,
@@ -48,6 +52,8 @@ impl Default for RoverGUI {
             value: 2.7,
             current_frame: placeholder_image,
             zmq_socket: Arc::new(Mutex::new(socket)),
+            given_ip: "127.0.0.1".to_owned(),
+            given_port: 5570,
         }
     }
 }
@@ -66,6 +72,21 @@ impl RoverGUI {
 
         Default::default()
     }
+
+    fn connect(&mut self) {
+        let socket = self.zmq_socket
+            .as_ref()
+            .lock()
+            .unwrap()
+            .connect(format!("{}:{}", self.given_ip, self.given_port).as_str());
+
+        match socket {
+            Ok(socket) => (),
+            Err(error) => {
+                
+            }
+        }
+    }
 }
 
 impl eframe::App for RoverGUI {
@@ -82,6 +103,8 @@ impl eframe::App for RoverGUI {
             value,
             zmq_socket,
             current_frame,
+            given_ip,
+            given_port,
         } = self;
 
         // Examples of how to create different panels and windows.
