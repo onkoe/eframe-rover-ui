@@ -20,7 +20,9 @@ serde = { version = "1", features = ["derive"] }
 zmq = "0.10.0"
 egui_extras = {version = "0.21.0", features = ["image"]}
 image = {features = ["png"]}
-web-sys = { version = "0.3.61", features = ["console"] }
+log = "0.4.17"
+console_log = "1.0.0"
+env_logger = "0.10.0"
 
 # native:
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]

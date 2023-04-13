@@ -1,8 +1,9 @@
 use egui_extras::{image, RetainedImage};
 use std::sync::{Arc, Mutex};
 use std::thread::spawn;
-use web_sys::console;
 use zmq::{Context, Socket};
+use log::{Level, info, warn};
+
 
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
 #[derive(serde::Deserialize, serde::Serialize)]
@@ -47,6 +48,19 @@ impl Default for RoverGUI {
             .expect("Placeholder image initialization failed."),
         )));
 
+
+        // Initialize logging
+
+        // on desktop, print to the terminal
+        #[cfg(not(target_arch = "wasm32"))]
+        env_logger::init();
+
+        // on wasm, print to the console
+        #[cfg(target_arch = "wasm32")]
+        console_log::init_with_level();
+
+
+
         Self {
             // Example stuff:
             label: "Hello World!".to_owned(),
@@ -83,7 +97,7 @@ impl RoverGUI {
         let socket = match guarded_socket {
             Ok(good_socket) => good_socket,
             Err(error) => {
-                console::error_1(&"[connect]: Unable to access the ZMQ socket.".into());
+                warn!("[connect]: Unable to access the ZMQ socket.");
                 return;
             }
         };
@@ -92,12 +106,11 @@ impl RoverGUI {
 
         match result {
             Ok(_) => {
-                console::log_1(&"[connect]: ZMQ connection successful!".into());
+                info!("[connect]: ZMQ connection successful!");
             }
             Err(error) => {
-                console::error_1(&"[connect]: ZMQ connection error!".into());
-                console::error_1(&error.message().into());
-                console::error_1(&"--------".into());
+                warn!("[connect]: ZMQ connection error!");
+                warn!("{}", error.message());
             }
         }
     }
